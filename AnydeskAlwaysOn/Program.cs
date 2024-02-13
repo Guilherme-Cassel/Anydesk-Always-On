@@ -1,15 +1,14 @@
-﻿using System.Diagnostics;
+﻿using AnydeskAlwaysOn.Properties;
+using System.Diagnostics;
 
 namespace AnydeskAlwaysOn;
 class Program
 {
     public static event EventHandler? ProcessDied;
-    private static string AnyDeskExecutablePath = @$"{Environment.GetEnvironmentVariable("USERPROFILE")}\AppData\Local\AnyDesk\AnyDesk.exe";
-    private static string NeededFiles = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"NeededFiles\");
 
     static void Main()
     {
-        CheckIfThereIsntAlreadyAnInstanceOfThisProgram();
+        AnyDeskProcessManager.EnsureSingleInstance();
 
         ProcessDied += Process_Died;
 
@@ -20,25 +19,13 @@ class Program
         AttachEventToProcess(MainProcess("AnyDesk"), ProcessDied);
     }
 
-    private static Process MainProcess(string processName)
-    {
-        return GetProcessesListByName(processName)[0];
-    }
 
-    private static List<Process> ListProcess(string processName)
-    {
-        return GetProcessesListByName(processName);
-    }
 
     ////////////////////////////////////////////////////////////////
 
     private static void MakeSureThereIsAnInstanceOfAnyDeskOpen()
     {
-        if (ListProcess("AnyDesk").Count <= 0)
-        {
-            Process.Start(AnyDeskExecutablePath);
-            Thread.Sleep(1000);
-        }
+        
     }
 
     private static void CheckIfAnyDeskExecutableExists()
@@ -63,39 +50,6 @@ class Program
         {
             file.CopyTo(DirectoryPathWithoutSufix + file.Name, false);
         }
-    }
-
-    private static void CheckIfThereIsntAlreadyAnInstanceOfThisProgram()
-    {
-        List<Process> thisProcesses = ListProcess("AnyDesk Always On");
-        if (thisProcesses.Count > 1)
-        {
-            for (int i = 1; i < thisProcesses.Count; i++)
-            {
-                thisProcesses[i].Kill();
-            }
-        }
-    }
-
-    private static List<Process> GetProcessesListByName(string processName)
-    {
-        Process[] processes = Process.GetProcessesByName(processName);
-
-        List<Process> correctProcesses = new List<Process>();
-        foreach (Process process in processes)
-        {
-            try
-            {
-                string processPath = process.MainModule.FileName;
-                correctProcesses.Add(process);
-            }
-            catch (Exception) { }
-        }
-
-        if (correctProcesses.Count == 0)
-            return new List<Process>();
-
-        return correctProcesses;
     }
 
     private static void AttachEventToProcess(Process process, EventHandler? e)
