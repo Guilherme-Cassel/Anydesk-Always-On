@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AnyDesk_Always_On;
+using System.Diagnostics;
 
 namespace AnydeskAlwaysOn;
 
@@ -23,7 +24,7 @@ public class ProcessAlwaysOn(string processExecutableName) : ProcessManager(proc
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Erro Capturado com Sucesso! Contate seu TI", MessageBoxButtons.OK);
+            throw new HandledException(ex);
         }
     }
 
@@ -33,17 +34,27 @@ public class ProcessAlwaysOn(string processExecutableName) : ProcessManager(proc
 
         Process = Process.Start(processExecutableName);
 
+        InformUserAboutBehavior();
+
+        HandleExitEvent();
+    }
+
+    private void InformUserAboutBehavior()
+    {
+        const string friendlyMessage = "Favor Manter o AnyDesk Aberto, Para Fins de Acesso Remoto";
+        const string warningMessage = "PODES PARAR DE FECHAR POR FAVOR?!?!";
+
+        var message = (RestartCount > 20) ? warningMessage : friendlyMessage;
+
         if (RestartCount > 5)
             MessageBox.Show
                 (
-                (RestartCount > 20) ? "PODES PARAR DE FECHAR POR FAVOR?!?!" : "Favor Manter o AnyDesk Aberto, Para Fins de Acesso Remoto",
+                message,
                 "AnyDesk Always On",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 default,
                 MessageBoxOptions.ServiceNotification
                 );
-
-        HandleExitEvent();
     }
 }
