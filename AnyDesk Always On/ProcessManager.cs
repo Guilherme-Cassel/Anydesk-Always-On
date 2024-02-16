@@ -3,15 +3,8 @@ using System.Diagnostics;
 
 namespace AnydeskAlwaysOn;
 
-public partial class ProcessManager(string processExecutableName) : IDisposable
+public partial class ProcessManager(string processExecutableName)
 {
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-    }
-
     public Process? MainProcess() => GetProcessesListByName().FirstOrDefault();
 
     public List<Process> ListProcess() => GetProcessesListByName();
