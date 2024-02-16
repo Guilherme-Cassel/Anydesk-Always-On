@@ -4,6 +4,7 @@ namespace AnydeskAlwaysOn;
 
 public class ProcessAlwaysOn(string processExecutableName) : ProcessManager(processExecutableName)
 {
+    private int RestartCount = 0;
     public Process Process { get; private set; } = null!;
 
     public void Start()
@@ -28,7 +29,20 @@ public class ProcessAlwaysOn(string processExecutableName) : ProcessManager(proc
 
     private void Restart()
     {
+        RestartCount++;
+
         Process = Process.Start(processExecutableName);
+
+        if (RestartCount > 5)
+            MessageBox.Show
+                (
+                (RestartCount > 20) ? "PODES PARAR DE FECHAR POR FAVOR?!?!" : "Favor Manter o AnyDesk Aberto, Para Fins de Acesso Remoto",
+                "AnyDesk Always On",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information,
+                default,
+                MessageBoxOptions.ServiceNotification
+                );
 
         HandleExitEvent();
     }
