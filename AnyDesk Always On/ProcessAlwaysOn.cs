@@ -2,14 +2,14 @@
 
 namespace AnydeskAlwaysOn;
 
-public class ProcessAlwaysOn(string processExecutableName) : ProcessManager
+public class ProcessAlwaysOn(string processExecutableName) : ProcessManager(processExecutableName)
 {
     public Process Process { get; private set; } = null!;
-    public string ProcessExecutableName { get; } = processExecutableName;
 
     public void Start()
     {
-        Process = MainProcess(ProcessExecutableName) ?? Process.Start(ProcessExecutableName);
+        Process = MainProcess() ?? Process.Start(processExecutableName);
+
         HandleExitEvent();
     }
 
@@ -18,7 +18,7 @@ public class ProcessAlwaysOn(string processExecutableName) : ProcessManager
         try
         {
             Process.WaitForExit();
-            RestartProcess();
+            Restart();
         }
         catch (Exception ex)
         {
@@ -26,9 +26,9 @@ public class ProcessAlwaysOn(string processExecutableName) : ProcessManager
         }
     }
 
-    private void RestartProcess()
+    private void Restart()
     {
-        Process = Process.Start(ProcessExecutableName);
+        Process = Process.Start(processExecutableName);
 
         HandleExitEvent();
     }

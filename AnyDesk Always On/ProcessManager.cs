@@ -1,18 +1,19 @@
-﻿using System.Diagnostics;
+﻿using AnyDesk_Always_On;
+using System.Diagnostics;
 
 namespace AnydeskAlwaysOn;
 
-public class ProcessManager
+public partial class ProcessManager(string processExecutableName)
 {
-    public static Process? MainProcess(string processName) => GetProcessesListByName(processName).FirstOrDefault();
+    public Process? MainProcess() => GetProcessesListByName().FirstOrDefault();
 
-    public static List<Process> ListProcess(string processName) => GetProcessesListByName(processName);
+    public List<Process> ListProcess() => GetProcessesListByName();
 
-    private static List<Process> GetProcessesListByName(string processName)
+    private List<Process> GetProcessesListByName()
     {
-        processName = processName.Replace(".exe", string.Empty);
+        var formattedProcessName = processExecutableName.Replace(".exe", string.Empty);
 
-        var AllProcesses = Process.GetProcessesByName(processName);
+        var AllProcesses = Process.GetProcessesByName(formattedProcessName);
         List<Process> myProcesses = [];
 
         foreach (var process in AllProcesses)
@@ -22,13 +23,13 @@ public class ProcessManager
                 var isMine = process.MainModule;
                 myProcesses.Add(process);
             }
-            catch (System.ComponentModel.Win32Exception) 
+            catch (System.ComponentModel.Win32Exception)
             {
                 //Access Denied To Property
             }
             catch (Exception ex)
             {
-                throw new Exception(@"Houve um erro ao capturar os processos referentes ao AnyDesk Always On" , ex);
+                throw new ProcessCapturingException(ex);
             }
         }
 

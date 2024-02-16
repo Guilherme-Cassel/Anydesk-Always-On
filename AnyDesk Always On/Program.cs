@@ -1,11 +1,16 @@
-﻿namespace AnydeskAlwaysOn;
+﻿using System.Diagnostics;
 
-class Program : ProcessManager
+namespace AnydeskAlwaysOn;
+
+class Program
 {
     static void Main()
     {
-        if (ListProcess(AppDomain.CurrentDomain.FriendlyName).Count > 1)
+        if (new ProcessManager(AppDomain.CurrentDomain.FriendlyName).ListProcess().Count > 1)
+        {
+            MessageBox.Show("Já existe uma instancia do AnyDesk Always On Rodando!");
             return;
+        }
 
         ProcessAlwaysOn processAlwaysOn = new
         (
