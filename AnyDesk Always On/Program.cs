@@ -17,10 +17,7 @@ class Program
         }
 
 
-        ProcessAlwaysOn processAlwaysOn = new
-            (
-                "AnyDesk.exe"
-            );
+        ProcessAlwaysOn processAlwaysOn = new ("AnyDesk.exe");
         processAlwaysOn.Start();
     }
 }
