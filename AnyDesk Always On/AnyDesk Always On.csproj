@@ -8,10 +8,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageIcon></PackageIcon>
+    <ApplicationIcon>AnyDesk Always On Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="AnyDesk.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AnyDesk Always On Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
