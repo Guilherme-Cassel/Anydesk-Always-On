@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using AnyDesk_Always_On;
 
 namespace AnydeskAlwaysOn;
 
@@ -6,14 +6,25 @@ class Program
 {
     static void Main()
     {
-        EnsureSingleInstance();
+        try
+        {
+            EnsureSingleInstance();
+            FileManager.CreateShortcutOnStartup();
 
-        ProcessAlwaysOn processAlwaysOn = new("AnyDesk.exe");
-        processAlwaysOn.Start();
+            ProcessAlwaysOn processAlwaysOn = new("Application\\AnyDesk.exe");
+            processAlwaysOn.Start();
+        }
+        catch (Exception ex)
+        {
+            throw new HandledFatalException(ex);
+        }
     }
+
     static void EnsureSingleInstance()
     {
-        ProcessManager? processManager = new(AppDomain.CurrentDomain.FriendlyName);
+        var appName = AppDomain.CurrentDomain.FriendlyName;
+
+        using ProcessManager processManager = new(appName);
 
         if (processManager.ListProcess().Count > 1)
         {
@@ -22,7 +33,7 @@ class Program
             "AnyDesk Always On"
             );
 
-            Process.GetCurrentProcess().Kill();
+            Environment.Exit(0);
         }
     }
 }
