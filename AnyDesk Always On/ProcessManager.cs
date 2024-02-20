@@ -11,7 +11,7 @@ public partial class ProcessManager(string processExecutableName) : IDisposable
 
     private List<Process> GetProcessesListByName()
     {
-        var formattedProcessName = processExecutableName.Replace(".exe", string.Empty);
+        var formattedProcessName = Path.GetFileNameWithoutExtension(processExecutableName).Trim();
 
         var AllProcesses = Process.GetProcessesByName(formattedProcessName);
         List<Process> myProcesses = [];
