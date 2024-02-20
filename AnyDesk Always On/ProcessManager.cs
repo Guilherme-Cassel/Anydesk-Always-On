@@ -16,16 +16,12 @@ public partial class ProcessManager(string processExecutableName) : IDisposable
         var AllProcesses = Process.GetProcessesByName(formattedProcessName);
         List<Process> myProcesses = [];
 
-        foreach (var process in AllProcesses)
+        foreach (var item in AllProcesses)
         {
             try
             {
-                var isMine = process.MainModule;
-                myProcesses.Add(process);
-            }
-            catch (System.ComponentModel.Win32Exception)
-            {
-                //Access Denied To Property
+                if (IsProcessAccessible(item))
+                    myProcesses.Add(item);
             }
             catch (Exception ex)
             {
@@ -34,6 +30,21 @@ public partial class ProcessManager(string processExecutableName) : IDisposable
         }
 
         return myProcesses;
+    }
+
+    private static bool IsProcessAccessible(Process process)
+    {
+        try
+        {
+            // Attempt to access the MainModule property to see if it's accessible
+            if (process.MainModule != null) { /* ᕦ(ò_óˇ)ᕤ */ }
+            return true;
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            // Access denied to MainModule
+            return false;
+        }
     }
 
     public void Dispose()
