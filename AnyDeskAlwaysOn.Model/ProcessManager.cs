@@ -1,7 +1,6 @@
-﻿using AnyDesk_Always_On;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace AnydeskAlwaysOn;
+namespace AnyDeskAlwaysOn.Model;
 
 public partial class ProcessManager(string processExecutableName) : IDisposable
 {
@@ -36,14 +35,24 @@ public partial class ProcessManager(string processExecutableName) : IDisposable
     {
         try
         {
-            // Attempt to access the MainModule property to see if it's accessible
-            if (process.MainModule != null) { /* ᕦ(ò_óˇ)ᕤ */ }
+            // Attempt to access the MainModule property to see if it's accessible ᕦ(ò_óˇ)ᕤ
+            var testIfAcessible = process.MainModule;
             return true;
         }
         catch (System.ComponentModel.Win32Exception)
         {
             // Access denied to MainModule
             return false;
+        }
+    }
+
+    public static void EnsureSingleInstance(string instanceName)
+    {
+        using ProcessManager processManager = new(instanceName);
+
+        if (processManager.ListProcess().Count > 1)
+        {
+            throw new DuplicatedInstanceException();
         }
     }
 

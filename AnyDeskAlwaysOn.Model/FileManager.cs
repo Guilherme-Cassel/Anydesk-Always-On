@@ -1,22 +1,24 @@
 ﻿using IWshRuntimeLibrary;
 
-namespace AnyDesk_Always_On;
+namespace AnyDeskAlwaysOn.Model;
 
 public static class FileManager
 {
     private static readonly string StartupShortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "AnyDesk Always On.lnk");
     private static readonly string CurrentExePath = Environment.ProcessPath!;
+
     public static void CreateShortcutOnStartup()
     {
         if (System.IO.File.Exists(StartupShortcutPath))
             return;
 
-        IWshShell_Class wshShell = new();
+        IWshShell_Class wshShell_Class = new();
 
-        IWshShortcut shortcut = (IWshShortcut)wshShell.CreateShortcut(StartupShortcutPath);
+        IWshShortcut wshShortcut = (IWshShortcut)wshShell_Class.CreateShortcut(StartupShortcutPath);
 
-        shortcut.TargetPath = CurrentExePath;
+        wshShortcut.TargetPath = CurrentExePath;
 
-        shortcut.Save();
+        wshShortcut.Save();
     }
 }
+

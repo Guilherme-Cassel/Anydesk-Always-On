@@ -1,6 +1,6 @@
-﻿using AnyDesk_Always_On;
+﻿using AnyDeskAlwaysOn.Model;
 
-namespace AnydeskAlwaysOn;
+namespace Anydesk_Always_On;
 
 class Program
 {
@@ -8,7 +8,7 @@ class Program
     {
         try
         {
-            EnsureSingleInstance();
+            ProcessManager.EnsureSingleInstance(AppDomain.CurrentDomain.FriendlyName);
             FileManager.CreateShortcutOnStartup();
 
             ProcessAlwaysOn processAlwaysOn = new("Application\\AnyDesk.exe");
@@ -16,20 +16,13 @@ class Program
         }
         catch (Exception ex)
         {
-            throw new HandledFatalException(ex);
-        }
-    }
+            MessageBox.Show
+                    (ex.Message,
+                    "AnyDesk Always On",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    default);
 
-    static void EnsureSingleInstance()
-    {
-        using Mutex singleton = new (true, AppDomain.CurrentDomain.FriendlyName);
-
-        if (!singleton.WaitOne(TimeSpan.Zero, true)) //there is already another instance running!
-        {
-            MessageBox.Show(
-                "Já Existe uma Instancia do Software Sendo Executada!",
-                "AnyDesk Always On");
-            
             Environment.Exit(0);
         }
     }
