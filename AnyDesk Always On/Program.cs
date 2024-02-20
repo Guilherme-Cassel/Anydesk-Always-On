@@ -22,17 +22,14 @@ class Program
 
     static void EnsureSingleInstance()
     {
-        var appName = AppDomain.CurrentDomain.FriendlyName;
+        using Mutex singleton = new (true, AppDomain.CurrentDomain.FriendlyName);
 
-        using ProcessManager processManager = new(appName);
-
-        if (processManager.ListProcess().Count > 1)
+        if (!singleton.WaitOne(TimeSpan.Zero, true)) //there is already another instance running!
         {
             MessageBox.Show(
-            "Já Existe uma Instancia do Software Sendo Executada!",
-            "AnyDesk Always On"
-            );
-
+                "Já Existe uma Instancia do Software Sendo Executada!",
+                "AnyDesk Always On");
+            
             Environment.Exit(0);
         }
     }
