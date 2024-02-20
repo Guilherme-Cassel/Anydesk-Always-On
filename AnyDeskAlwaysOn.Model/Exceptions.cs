@@ -4,4 +4,4 @@ public class ProcessCapturingException(Exception exception) : Exception(@"Houve 
 
 public class HandledException(Exception exception) : Exception("Erro Capturado com Sucesso! Contate seu TI\nErro:", exception);
 
-public class DuplicatedInstanceException() : Exception("Já Existe uma Instancia do Software Sendo Executada!");
+public class DuplicatedInstanceException() : Exception("Já Existe uma Instância do Software Sendo Executada!");
