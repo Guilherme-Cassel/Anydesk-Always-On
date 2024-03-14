@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Management;
 
 namespace AnyDeskAlwaysOn.Model;
 
@@ -33,15 +34,55 @@ public partial class ProcessManager(string processExecutableName) : IDisposable
 
     private static bool IsProcessAccessible(Process process)
     {
+        string GetProcessOwner()
+        {
+            string processOwner = "Unknown";
+
+            try
+            {
+                string query = "Select * From Win32_Process Where ProcessID = " + process.Id;
+
+                using ManagementObjectSearcher? searcher = new(query);
+                using ManagementObjectCollection? processList = searcher.Get();
+
+                foreach (var obj in processList)
+                {
+                    var mo = (ManagementObject)obj;
+                    string[] argList = [string.Empty, string.Empty];
+                    int returnValue = Convert.ToInt32(mo.InvokeMethod("GetOwner", argList));
+                    if (returnValue == 0)
+                    {
+                        // Index 0 is the user name
+                        processOwner = argList.First();
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HandledException(ex);
+            }
+
+            return processOwner;
+        }
+
         try
         {
-            // Attempt to access the MainModule property to see if it's accessible ᕦ(ò_óˇ)ᕤ
             var testIfAcessible = process.MainModule;
+
+            if (GetProcessOwner() != Environment.UserName)
+                throw new Exception();
+
             return true;
         }
         catch (System.ComponentModel.Win32Exception)
         {
             // Access denied to MainModule
+            return false;
+        }
+        catch (Exception)
+        {
+            // Process Owner is not current user
             return false;
         }
     }
